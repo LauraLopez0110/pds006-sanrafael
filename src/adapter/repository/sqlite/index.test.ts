@@ -4,7 +4,7 @@ import { MikroOrmDeviceRepository } from "@/adapter/repository/sqlite/mikro-orm-
 
 import { MikroORM } from "@mikro-orm/sqlite";
 import config from "../../../../mikro-orm.config";
-import { beforeEach, afterAll, describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 
 describe("DeviceRepository contract tests", () => {
   let repo: DeviceRepository;

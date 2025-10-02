@@ -2,6 +2,7 @@
 - Vanesa Alexandra Amaya Bohórquez
 - Laura Yulieth Lopez Albino
 - Maria Camila Lopez Bernal
+-Johan Andrei López Higuera
 
 # Practicas/Metricas aplicadas a lo largo del proyecto
 

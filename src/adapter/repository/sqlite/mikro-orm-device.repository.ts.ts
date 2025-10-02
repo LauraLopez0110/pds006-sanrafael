@@ -24,6 +24,8 @@ function buildFindOptions(criteria: DeviceCriteria): {
   const where: Record<string, unknown> = {};
   const opts: any = { where };
 
+  //Aplica los filtros
+
   if (criteria.filterBy) {
     where[criteria.filterBy.field] = criteria.filterBy.value;
   }
@@ -31,6 +33,7 @@ function buildFindOptions(criteria: DeviceCriteria): {
   if (criteria.limit) opts.limit = criteria.limit;
   if (criteria.offset) opts.offset = criteria.offset;
 
+   // Orden
   if (criteria.sortBy) {
     opts.orderBy = {
       [criteria.sortBy.field]: criteria.sortBy.isAscending ? "asc" : "desc",
@@ -42,11 +45,14 @@ function buildFindOptions(criteria: DeviceCriteria): {
   return opts;
 }
 
+// Implementación del repositorio con MikroORM
+// Maneja las consultas de dispositivos
 export class MikroOrmDeviceRepository implements DeviceRepository {
   constructor(private readonly em: EntityManager) {}
 
   // --- REGISTROS ---
 
+    // Registra un computador en BD
   async checkinComputer(computer: Computer): Promise<Computer> {
     const e = this.em.create(ComputerEntity, {
       id: computer.id,
@@ -64,7 +70,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     await this.em.persistAndFlush(e);
     return computer;
   }
-
+// Registra un dispositivo médico en la BD
   async checkinMedicalDevice(device: MedicalDevice): Promise<MedicalDevice> {
     const e = this.em.create(MedicalDeviceEntity, {
       id: device.id,
@@ -83,6 +89,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     return device;
   }
 
+   // Registra las entradas y salidas de un computador
   async registerFrequentComputer(computer: FrequentComputer): Promise<FrequentComputer> {
     const e = this.em.create(FrequentComputerEntity, {
       id: computer.device.id,
@@ -99,6 +106,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
 
     await this.em.persistAndFlush(e);
 
+    // <evuelve el dispositivo y sus URLs de entrada y salida
     return {
       device: computer.device,
       checkinURL: new URL(`/devices/${computer.device.id}/checkin`, "http://localhost:3000"),
@@ -106,6 +114,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     };
   }
 
+  //Registra una nueva entrada para un computador frecuente
   async checkinFrequentComputer(id: DeviceId, datetime: Date): Promise<FrequentComputer> {
     const e = await this.em.findOne(FrequentComputerEntity, { id });
     if (!e) throw new Error("Frequent computer not found");
@@ -132,6 +141,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
 
   // --- CONSULTAS ---
 
+  //Trae la lista de computadores
   async getComputers(criteria: DeviceCriteria): Promise<Computer[]> {
     const opts = buildFindOptions(criteria);
     const list = await this.em.find(ComputerEntity, opts.where, {
@@ -153,6 +163,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     }));
   }
 
+  // Trae la lista de dispositivos médicos
   async getMedicalDevices(criteria: DeviceCriteria): Promise<MedicalDevice[]> {
     const opts = buildFindOptions(criteria);
     const list = await this.em.find(MedicalDeviceEntity, opts.where, {
@@ -173,7 +184,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
       updatedAt: e.updatedAt,
     }));
   }
-
+  // Trae la lista de computadores frecuentes
   async getFrequentComputers(criteria: DeviceCriteria): Promise<FrequentComputer[]> {
     const opts = buildFindOptions(criteria);
     const list = await this.em.find(FrequentComputerEntity, opts.where, {
@@ -198,6 +209,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     }));
   }
 
+  // Trae la lista de todos los dispositivos ingresados
   async getEnteredDevices(criteria: DeviceCriteria): Promise<EnteredDevice[]> {
     const computers = await this.getComputers(criteria);
     const medicals = await this.getMedicalDevices(criteria);
@@ -220,8 +232,9 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
   }
 
   // --- FLAGS ---
-
+  // Registra la salida de un dispositivo
   async checkoutDevice(id: DeviceId, datetime: Date): Promise<void> {
+    // Busca en computadores
     const comp = await this.em.findOne(ComputerEntity, { id });
     if (comp) {
       comp.checkoutAt = datetime;
@@ -230,6 +243,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
       return;
     }
 
+     // Busca en dispositivos médicos
     const med = await this.em.findOne(MedicalDeviceEntity, { id });
     if (med) {
       med.checkoutAt = datetime;
@@ -238,6 +252,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
       return;
     }
 
+    // Busca en computadores frecuentes
     const freq = await this.em.findOne(FrequentComputerEntity, { id });
     if (freq) {
       freq.lastCheckoutAt = datetime;
@@ -246,6 +261,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     }
   }
 
+  // Verifica si un dispositivo está ingresado
   async isDeviceEntered(id: DeviceId): Promise<boolean> {
     const comp = await this.em.findOne(ComputerEntity, { id });
     if (comp && comp.checkinAt && !comp.checkoutAt) return true;
@@ -259,6 +275,7 @@ export class MikroOrmDeviceRepository implements DeviceRepository {
     return false;
   }
 
+  // Verifica si un computador frecuente ya fue registrado
   async isFrequentComputerRegistered(id: DeviceId): Promise<boolean> {
     const freq = await this.em.findOne(FrequentComputerEntity, { id });
     return !!freq;

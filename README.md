@@ -1,3 +1,8 @@
+## Integrantes
+- Vanesa Alexandra Amaya Bohórquez
+- Laura Yulieth Lopez Albino
+- Maria Camila Lopez Bernal
+
 # Practicas/Metricas aplicadas a lo largo del proyecto
 
 - Arquitectura hexagonal
@@ -27,3 +32,42 @@ bun run dev
 ```
 
 Open http://localhost:3000/ with your browser to see the result.
+
+## Arquitectura del proyecto
+
+pds006-sanrafael/
+src/
+├── adapter/ # Adaptadores hacia infraestructura externa
+│ └── repository/ # Implementaciones de persistencia con MikroORM
+│ └── entities/ # Entidades mapeadas a base de datos
+│   ├── computer.entity.ts
+│   ├── frequent-computer.entity.ts
+│   ├── medical-device.entity.ts
+|   └── index.ts
+│ ├── mikro-orm-device.repository.ts
+│ └── index.ts
+│
+├── core/ # Núcleo de negocio (Dominio y lógica)
+│ ├── domain/ # Entidades y objetos de dominio (Computer, MedicalDevice, etc.)
+│ ├── dto/ # Data Transfer Objects (DTOs) para comunicación
+│ ├── repository/ # Interfaces de repositorios (puertos)
+│ ├── service/ # Casos de uso y lógica de aplicación
+│ ├── utils/ # Funciones utilitarias
+│ └── constants.ts # Constantes globales
+│
+├── migrations/ # Migraciones de base de datos (MikroORM)
+│ ├── .snapshot-database.sqlite.json
+│ └── Migration20251002041745.ts
+│
+├── index.ts # Punto de entrada de la aplicación
+│
+├── .env # Variables de entorno
+├── .gitignore
+├── architecture.md # Documento de diseño de arquitectura
+├── bun.lock # Lockfile de Bun
+├── mikro-orm.config.ts # Configuración de MikroORM
+├── package.json # Dependencias y scripts
+├── README.md # Documentación principal
+├── test-db.ts # Script para pruebas de base de datos
+└── tsconfig.json # Configuración de TypeScript
+

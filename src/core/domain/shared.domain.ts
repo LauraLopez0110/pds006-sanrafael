@@ -19,3 +19,4 @@ export type EnteredDevice = {
   updatedAt: Date
   type: "computer" | "frequent-computer" | "medical-device"
 }
+

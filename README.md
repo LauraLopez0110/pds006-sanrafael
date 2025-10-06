@@ -34,6 +34,10 @@ bun run dev
 
 Open http://localhost:3000/ with your browser to see the result.
 
+## Uploading Images Url
+
+curl.exe --% -X POST http://localhost:3000/upload -F "file=@RutaCompleta" -F "deviceId=device-123"
+
 ## Arquitectura del proyecto
 
 pds006-sanrafael/

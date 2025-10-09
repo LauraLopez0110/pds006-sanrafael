@@ -11,9 +11,9 @@ describe("DeviceRepository contract tests", () => {
 
   beforeEach(async () => {
   const orm = await MikroORM.init(config);
-  await orm.getSchemaGenerator().clearDatabase(); 
+  await orm.getSchemaGenerator().refreshDatabase();
   repo = new MikroOrmDeviceRepository(orm.em.fork());
-});
+  });
 
   it("registerFrequentComputer should persist and return a frequent computer", async () => {
     const computer: Computer = {

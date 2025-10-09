@@ -2,7 +2,7 @@
 import { Elysia } from "elysia";
 import path from "path";
 import fs from "fs";
-import { FilesystemPhotoRepository } from "./adapter/photo/filesystem/filesystemPhotoRepository";
+import { FilesystemPhotoRepository } from "./adapter/photo/filesystem/filesystem.photo-repository";
 
 const PORT = Number(process.env.PORT ?? 3000);
 

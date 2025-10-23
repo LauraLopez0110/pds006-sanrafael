@@ -3,6 +3,7 @@ import Elysia from 'elysia';
 import { CRITERIA_QUERY_PARAMS_SCHEMA, CriteriaHelper, CriteriaQueryParams } from './criteria.helper';
 import { COMPUTER_REQUEST_SCHEMA, ComputerRequest, MED_DEVICE_REQUEST_SCHEMA, MedDeviceRequest } from '@/core/dto';
 import * as z from 'zod';
+import { Computer, EnteredDevice, FrequentComputer, MedicalDevice } from '@/core/domain';
 export class Controller {
     constructor(
         private computerService: ComputerService,
@@ -37,12 +38,17 @@ export class Controller {
                 "/computers/frequent",
                 ({ body }) => this.registerFrequentComputer(body),
                 {
+                    type: "multipart/form-data",
                     body: COMPUTER_REQUEST_SCHEMA
                 }
             )
             .get(
                 "/computers",
                 ({ query }) => this.getComputers(query)
+            )
+            .get(
+                "/medicaldevices",
+                ({ query }) => this.getMedicalDevices(query)
             )
             .get(
                 "/computers/frequent",
@@ -68,38 +74,43 @@ export class Controller {
             
     }
 
-    async checkinComputer( request: ComputerRequest){
+    async checkinComputer( request: ComputerRequest): Promise<Computer> {
         return this.computerService.checkinComputer(request);
     }
 
-    async checkinFrecuentComputer(id: string){
+    async checkinFrecuentComputer(id: string): Promise<FrequentComputer>{
         return this.computerService.checkinFrequentComputer(id);
     }
 
-    async checkinMedicalDevice( request: MedDeviceRequest){
+    async checkinMedicalDevice( request: MedDeviceRequest): Promise<MedicalDevice>{
         return this.medicalDeviceService.checkinMedicalDevice(request);
     }
 
-    async registerFrequentComputer(request: ComputerRequest){
+    async registerFrequentComputer(request: ComputerRequest): Promise<FrequentComputer>{
         return this.computerService.registerFrequentComputer(request);
     }
 
-    async getComputers(queryParams: CriteriaQueryParams){
+    async getComputers(queryParams: CriteriaQueryParams): Promise<Computer[]>{
         const criteria = CriteriaHelper.parseFromQuery(queryParams);
         return this.computerService.getComputers(criteria);
     }
 
-    async getFrequentComputers(queryParams: CriteriaQueryParams){
+    async getFrequentComputers(queryParams: CriteriaQueryParams): Promise<FrequentComputer[]>{
         const criteria = CriteriaHelper.parseFromQuery(queryParams);
         return this.computerService.getFrequentComputers(criteria);
     }
 
-    async getEnteredDevices(queryParams: CriteriaQueryParams){
+    async getEnteredDevices(queryParams: CriteriaQueryParams): Promise<EnteredDevice[]>{
         const criteria = CriteriaHelper.parseFromQuery(queryParams);
         return this.deviceService.getEnteredDevices(criteria);
     }
 
     async checkoutDevice(id: string){
         return this.deviceService.checkoutDevice(id);
+    }
+
+    async getMedicalDevices(queryParams: CriteriaQueryParams): Promise<MedicalDevice[]>{
+        const criteria = CriteriaHelper.parseFromQuery(queryParams);
+        return this.medicalDeviceService.getMedicalDevices(criteria);
     }
 }

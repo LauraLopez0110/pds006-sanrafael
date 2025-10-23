@@ -1,12 +1,13 @@
 import openapi from '@elysiajs/openapi';
 import { Controller } from './controller';
 import { ComputerService, DeviceService, MedicalDeviceService } from '@/core/service';
-import { FilesystemPhotoRepository } from '@/adapter/photo/filesystem/filesystem.photo-repository'; // 👈 necesario para guardar fotos
+import { FilesystemPhotoRepository } from '@/adapter/photo/filesystem/filesystem.photo-repository'; 
 import Elysia from 'elysia';
 
 export class ElysiaAdapter {
     private controller: Controller;
     private photoRepository: FilesystemPhotoRepository;
+    public app: Elysia
 
     constructor(
         computerService: ComputerService,
@@ -21,13 +22,13 @@ export class ElysiaAdapter {
 
         // 📸 Instancia del repositorio de fotos (temporalmente aquí)
         this.photoRepository = new FilesystemPhotoRepository();
+
+        this.app= new Elysia()
+            .use(openapi())
+            .use(this.controller.routes())
     }
 
     async run() {
-        const app = new Elysia()
-            .use(openapi({}))
-            .use(this.controller.routes()); // Rutas principales del API (controlador)
-
         // ==========================================================
         // 📸 INICIO: RUTAS DE FOTOS (subida manual de imágenes)
         // ----------------------------------------------------------
@@ -35,7 +36,7 @@ export class ElysiaAdapter {
         // Si luego se integran al Controller o a los servicios,
         // puedes mover todo este bloque allá sin romper la app.
         // ----------------------------------------------------------
-        app.post('/upload', async ({ request }) => {
+        this.app.post('/upload', async ({ request }) => {
             try {
                 const form = await request.formData();
                 const file = form.get('file') as File;
@@ -59,7 +60,7 @@ export class ElysiaAdapter {
         // 📸 FIN: RUTAS DE FOTOS
         // ==========================================================
 
-        app.listen(3000);
+        this.app.listen(3000)
         console.log('🚀 El servidor está corriendo en el puerto 3000');
     }
 }

@@ -1,6 +1,6 @@
 import { mapRequestToMedicalDevice, MED_DEVICE_REQUEST_SCHEMA, MedDeviceRequest } from "@core/dto";
 import { DevicePhotoRepository, DeviceRepository } from "@core/repository";
-import { MedicalDevice } from "@core/domain";
+import { DeviceCriteria, MedicalDevice } from "@core/domain";
 import { Helper } from "./helper";
 
 export class MedicalDeviceService {
@@ -8,6 +8,10 @@ export class MedicalDeviceService {
     private repository: DeviceRepository,
     private photoRepository: DevicePhotoRepository
   ) {}
+
+  async getMedicalDevices(criteria: DeviceCriteria): Promise<MedicalDevice[]> {
+    return await this.repository.getMedicalDevices(criteria)
+  }
   
   async checkinMedicalDevice(request: MedDeviceRequest): Promise<MedicalDevice> {
     MED_DEVICE_REQUEST_SCHEMA.parse(request)

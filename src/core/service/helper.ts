@@ -6,11 +6,11 @@ export class Helper {
   }
 
   static getFrequentCheckinURL(deviceId: DeviceId, baseURL: URL): URL {
-    return new URL(`/api/frequent/checkin/${deviceId}`, baseURL)
+    return new URL(`/api/computers/frequent/checkin/${deviceId}`, baseURL)
   }
 
   static getFrequentCheckoutURL(deviceId: DeviceId, baseURL: URL): URL {
-    return new URL(`/api/device/checkout/${deviceId}`, baseURL)
+    return new URL(`/api/devices/checkout/${deviceId}`, baseURL)
   }
 }
 

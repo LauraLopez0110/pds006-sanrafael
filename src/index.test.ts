@@ -5,7 +5,8 @@ import { ElysiaAdapter } from "./adapter/api/elysia";
 import { FilesystemPhotoRepository } from "./adapter/photo/filesystem/filesystem.photo-repository";
 import { MikroORM } from "@mikro-orm/sqlite";
 import mikroOrmConfig from "mikro-orm.config";
-import { MikroOrmDeviceRepository } from "./adapter/repository/sqlite/mikro-orm-device.repository.ts";
+import { MikroOrmDeviceRepository } from "./adapter/repository/sqlite/mikro-orm-device.repository";
+
 
 async function createTestImageFile(): Promise<File> {
   const pngBytes = new Uint8Array([
@@ -32,6 +33,11 @@ describe("Elysia Device API (multipart compatible)", () => {
   beforeAll(async () => {
     // 🧩 CAMBIO CLAVE: inicialización de la base de datos con MikroORM
     orm = await MikroORM.init(mikroOrmConfig);
+
+    // 🔧 LIMPIA/RESETEA el esquema para esta suite (evita UNIQUE conflicts entre corridas)
+    await orm.schema.refreshDatabase();
+
+    
     const em = orm.em.fork(); // se crea un EntityManager para el repositorio
 
     const deviceRepository = new MikroOrmDeviceRepository(em);

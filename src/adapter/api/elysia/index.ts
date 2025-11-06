@@ -3,6 +3,7 @@ import { Controller } from './controller';
 import { ComputerService, DeviceService, MedicalDeviceService } from '@/core/service';
 import { FilesystemPhotoRepository } from '@/adapter/photo/filesystem/filesystem.photo-repository'; 
 import Elysia from 'elysia';
+import { BETTER_AUTH_OPEN_API_SCHEMA } from './auth';
 
 export class ElysiaAdapter {
     private controller: Controller;
@@ -24,7 +25,6 @@ export class ElysiaAdapter {
         this.photoRepository = new FilesystemPhotoRepository();
 
         this.app= new Elysia()
-            .use(openapi())
             .use(this.controller.routes())
     }
 
@@ -60,7 +60,14 @@ export class ElysiaAdapter {
         // 📸 FIN: RUTAS DE FOTOS
         // ==========================================================
 
-        this.app.listen(3000)
+        this.app
+        .use(openapi({
+            documentation: {
+                components: await BETTER_AUTH_OPEN_API_SCHEMA.components,
+                paths: await BETTER_AUTH_OPEN_API_SCHEMA.getPaths()
+            }
+        }))
+        .listen(3000)
         console.log('🚀 El servidor está corriendo en el puerto 3000');
     }
 }

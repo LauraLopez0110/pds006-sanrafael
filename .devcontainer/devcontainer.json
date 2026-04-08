@@ -1,0 +1,11 @@
+{
+  "name": "TypeScript DevContainer",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "esbenp.prettier-vscode"
+      ]
+    }
+  }
+}
